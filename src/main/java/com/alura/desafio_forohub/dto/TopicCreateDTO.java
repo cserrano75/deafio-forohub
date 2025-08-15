@@ -14,6 +14,7 @@ import lombok.*;
 @Builder
 
 public class TopicCreateDTO {
+
     @NotBlank
     @Size(max = 150)
     private String title;

@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: desafio-forohub
+
+  datasource:
+    url: jdbc:postgresql://localhost/DB_ForoHub
+    username: postgres
+    password: Vita2025
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        jakarta:
+          persistence:
+            schema-generation:
+              database:
+                action: none
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
