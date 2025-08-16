@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final com.alura.desafio_forohub.service.impl.UserDetailsServiceImpl userDetailsService;
     private final JwtUtils jwtUtils;
 
     public AuthController(AuthenticationManager authenticationManager,
-                          UserDetailsServiceImpl userDetailsService,
+                          com.alura.desafio_forohub.service.impl.UserDetailsServiceImpl userDetailsService,
                           JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
@@ -32,9 +32,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticateUser(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
         try {
-            // Autenticar usuario con Spring Security
+            // Autenticación usando AuthenticationManager
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             authRequest.getUsername(),
@@ -42,21 +42,18 @@ public class AuthController {
                     )
             );
 
-            // Cargar detalles del usuario (tipo org.springframework.security.core.userdetails.UserDetails)
+            // Obtener detalles del usuario
             UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
 
             // Generar token JWT
-            String jwt = jwtUtils.generateToken(userDetails);
+            String token = jwtUtils.generateToken(userDetails);
 
-            // Devolver token en respuesta
-            return ResponseEntity.ok(new AuthResponse(jwt));
+            return ResponseEntity.ok(new AuthResponse(token));
 
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(401).body(new AuthResponse("Credenciales inválidas"));
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(404).body(new AuthResponse("Usuario no encontrado"));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new AuthResponse("Error al procesar la autentificacion"));
+            return ResponseEntity.status(401).body(new AuthResponse("Credenciales inválidas"));
         }
     }
 }
